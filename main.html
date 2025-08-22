@@ -2,128 +2,280 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Custom Video Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Speed Controller</title>
   <style>
-    .player {
-      max-width: 750px;
-      margin: 20px auto;
-      border: 5px solid #333;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      color: #fff;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: #000;
-    }
-    .viewer {
-      width: 100%;
-      max-height: 430px;
-    }
-    .controls {
-      display: flex;
       align-items: center;
-      padding: 10px;
-      background: #222;
-      color: white;
-      font-family: Arial, sans-serif;
+      justify-content: center;
+      padding: 20px;
     }
-    .progress {
-      flex: 1;
-      background: #555;
-      height: 10px;
-      cursor: pointer;
-      margin: 0 10px;
+    
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .player {
+      width: 100%;
       position: relative;
     }
+    
+    .player__video {
+      width: 100%;
+      display: block;
+      background-color: #000;
+    }
+    
+    .player__controls {
+      display: flex;
+      flex-wrap: wrap;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      gap: 10px;
+    }
+    
+    .progress {
+      flex: 1 0 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+    }
+    
     .progress__filled {
       width: 0%;
-      background: #00ff7f;
       height: 100%;
-      flex: 0;
+      background: #ffc107;
+      border-radius: 5px;
+      transition: width 0.2s;
     }
+    
     .player__button {
       background: none;
       border: none;
       color: white;
-      font-size: 18px;
       cursor: pointer;
+      padding: 5px;
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+    
+    .player__button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .player__slider {
+      width: 100px;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      outline: none;
+    }
+    
+    .player__slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffc107;
+      cursor: pointer;
+    }
+    
+    .skip-buttons {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .player__controls > * {
       margin: 0 5px;
     }
-    input[type=range] {
-      margin: 0 5px;
+    
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .volume-control, .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .icon {
+      font-size: 20px;
+      color: #ffc107;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .instructions {
+      margin-top: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 900px;
+      width: 100%;
+    }
+    
+    .instructions h2 {
+      margin-bottom: 10px;
+      color: #ffc107;
+    }
+    
+    .instructions ul {
+      list-style-type: none;
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+      position: relative;
+    }
+    
+    .instructions li:before {
+      content: "►";
+      color: #ffc107;
+      position: absolute;
+      left: -20px;
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
-
-<div class="player">
-  <video class="viewer" src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
-
-  <div class="controls">
-    <button class="player__button toggle">►</button>
-    <button class="player__button" data-skip="-10">« 10s</button>
-    <button class="player__button" data-skip="25">25s »</button>
-    
-    <input type="range" name="volume" class="player__slider" min="0" max="1" step="0.05" value="1">
-    <input type="range" name="playbackRate" class="player__slider" min="0.5" max="2" step="0.1" value="1">
-    
-    <div class="progress">
-      <div class="progress__filled"></div>
+  <h1>Custom Video Player</h1>
+  
+  <div class="container">
+    <div class="player">
+      <video class="player__video viewer" src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+      
+      <div class="player__controls">
+        <div class="progress">
+          <div class="progress__filled"></div>
+        </div>
+        
+        <button class="player__button toggle" title="Toggle Play">►</button>
+        
+        <div class="skip-buttons">
+          <button class="player__button" data-skip="-10">« 10s</button>
+          <button class="player__button" data-skip="25">25s »</button>
+        </div>
+        
+        <div class="controls-group">
+          <div class="volume-control">
+            <span class="icon">🔊</span>
+            <input type="range" name="volume" class="player__slider" min="0" max="1" step="0.05" value="1">
+          </div>
+          
+          <div class="speed-control">
+            <span class="icon">⚡</span>
+            <input type="range" name="playbackRate" class="player__slider" min="0.5" max="2" step="0.1" value="1">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+  
+  <div class="instructions">
+    <h2>How to Use the Video Player</h2>
+    <ul>
+      <li>Click the <strong>►</strong> button to play and <strong>❚❚</strong> to pause the video</li>
+      <li>Drag the <strong>progress bar</strong> to jump to a specific part of the video</li>
+      <li>Use the <strong>volume slider</strong> to adjust the volume level</li>
+      <li>Use the <strong>speed slider</strong> to change playback speed (0.5x to 2x)</li>
+      <li>Click <strong>« 10s</strong> to rewind 10 seconds</li>
+      <li>Click <strong>25s »</strong> to skip forward 25 seconds</li>
+    </ul>
+  </div>
 
-<script>
-// Get elements
-const player = document.querySelector('.player');
-const video = player.querySelector('.viewer');
-const toggle = player.querySelector('.toggle');
-const skipButtons = player.querySelectorAll('[data-skip]');
-const ranges = player.querySelectorAll('.player__slider');
-const progress = player.querySelector('.progress');
-const progressBar = player.querySelector('.progress__filled');
+  <script>
+    // Get our elements
+    const player = document.querySelector('.player');
+    const video = player.querySelector('.viewer');
+    const progress = player.querySelector('.progress');
+    const progressBar = player.querySelector('.progress__filled');
+    const toggle = player.querySelector('.toggle');
+    const skipButtons = player.querySelectorAll('[data-skip]');
+    const ranges = player.querySelectorAll('.player__slider');
 
-// Functions
-function togglePlay() {
-  const method = video.paused ? 'play' : 'pause';
-  video[method]();
-}
+    // Functions
+    function togglePlay() {
+      const method = video.paused ? 'play' : 'pause';
+      video[method]();
+    }
 
-function updateButton() {
-  toggle.textContent = video.paused ? '►' : '❚ ❚';
-}
+    function updateButton() {
+      const icon = this.paused ? '►' : '❚ ❚';
+      toggle.textContent = icon;
+    }
 
-function skip() {
-  video.currentTime += parseFloat(this.dataset.skip);
-}
+    function skip() {
+      video.currentTime += parseFloat(this.dataset.skip);
+    }
 
-function handleRangeUpdate() {
-  video[this.name] = this.value;
-}
+    function handleRangeUpdate() {
+      video[this.name] = this.value;
+    }
 
-function handleProgress() {
-  const percent = (video.currentTime / video.duration) * 100;
-  progressBar.style.width = `${percent}%`;
-}
+    function handleProgress() {
+      const percent = (video.currentTime / video.duration) * 100;
+      progressBar.style.width = `${percent}%`;
+    }
 
-function scrub(e) {
-  const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
-  video.currentTime = scrubTime;
-}
+    function scrub(e) {
+      const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
+      video.currentTime = scrubTime;
+    }
 
-// Event listeners
-video.addEventListener('click', togglePlay);
-video.addEventListener('play', updateButton);
-video.addEventListener('pause', updateButton);
-video.addEventListener('timeupdate', handleProgress);
+    // Event listeners
+    video.addEventListener('click', togglePlay);
+    video.addEventListener('play', updateButton);
+    video.addEventListener('pause', updateButton);
+    video.addEventListener('timeupdate', handleProgress);
 
-toggle.addEventListener('click', togglePlay);
-skipButtons.forEach(button => button.addEventListener('click', skip));
-ranges.forEach(range => range.addEventListener('input', handleRangeUpdate));
-
-let mousedown = false;
-progress.addEventListener('click', scrub);
-progress.addEventListener('mousemove', (e) => mousedown && scrub(e));
-progress.addEventListener('mousedown', () => mousedown = true);
-progress.addEventListener('mouseup', () => mousedown = false);
-</script>
-
+    toggle.addEventListener('click', togglePlay);
+    
+    skipButtons.forEach(button => button.addEventListener('click', skip));
+    
+    ranges.forEach(range => range.addEventListener('change', handleRangeUpdate));
+    ranges.forEach(range => range.addEventListener('mousemove', handleRangeUpdate));
+    
+    let mousedown = false;
+    progress.addEventListener('click', scrub);
+    progress.addEventListener('mousemove', (e) => mousedown && scrub(e));
+    progress.addEventListener('mousedown', () => mousedown = true);
+    progress.addEventListener('mouseup', () => mousedown = false);
+  </script>
 </body>
 </html>
